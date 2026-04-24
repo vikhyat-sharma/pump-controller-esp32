@@ -1,47 +1,95 @@
 # Pump Controller (ESP32)
 
-An ESP32-based smart pump controller for water tank automation with:
-- local manual override button,
-- remote command/input via ESP-NOW,
-- cloud monitoring/control through Blynk,
-- Telegram notifications and command handling.
+A reliable and extensible **ESP32-based smart pump controller** designed for automated water tank management. This system integrates local control, wireless communication, and cloud connectivity to deliver a robust and safe pump operation experience.
 
-## What is new
+---
 
-- Added a **pump safety timeout** (`MAX_PUMP_ON_DURATION_MS`) to auto-stop long-running pump sessions.
-- Added a **restart cooldown** (`PUMP_RESTART_COOLDOWN_MS`) to prevent rapid relay/pump cycling.
-- Removed hardcoded credentials from tracked docs and code examples.
+## Overview
 
-## Quick Start
+The Pump Controller enables efficient monitoring and control of water pumps using multiple interfaces:
 
-1. Create your local config:
-   - Copy `Config.example.h` to `Config.h`.
-   - Fill your Wi-Fi, Blynk, and Telegram credentials in `Config.h`.
-2. Open `PumpController.ino` in Arduino IDE.
-3. Install required libraries listed in [`docs/REQUIREMENTS.md`](docs/REQUIREMENTS.md).
-4. Select your ESP32 board and upload.
+* **Manual Control**: Physical button for local override
+* **ESP-NOW Communication**: Low-latency, peer-to-peer data exchange between devices
+* **Blynk Integration**: Cloud-based dashboard for remote monitoring and control
+* **Telegram Integration**: Real-time alerts and command-based interaction
 
-## Blynk virtual pins
+This multi-channel design ensures both reliability and flexibility in real-world deployments.
 
-| Pin | Purpose |
-|---|---|
-| `V2` | Pump control switch |
-| `V3` | Pump status indicator |
-| `V4` | Flow pulse count |
-| `V5` | Safety timeout runtime (seconds) |
-| `V0` | Tank 1 level (from ESP-NOW) |
-| `V1` | Tank 2 level (from ESP-NOW) |
+---
 
-## Project details
+## What's New
 
-Detailed requirements and architecture are split into separate docs:
-- [`docs/REQUIREMENTS.md`](docs/REQUIREMENTS.md)
-- [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
+Recent updates focus on improving system safety and maintainability:
 
-## Security note
+* **Pump Safety Timeout**
+  Automatically stops the pump after a configurable maximum runtime (`MAX_PUMP_ON_DURATION_MS`) to prevent damage or dry running.
 
-Do not commit `Config.h` to GitHub. This repo includes `.gitignore` rules to prevent leaking secrets.
+* **Restart Cooldown Protection**
+  Introduces a delay (`PUMP_RESTART_COOLDOWN_MS`) between successive pump activations to avoid rapid relay switching and hardware stress.
+
+* **Improved Security Practices**
+  Removed hardcoded credentials from source files and documentation. Configuration is now handled securely via a local configuration file.
+
+---
+
+## Getting Started
+
+Follow these steps to set up and run the project:
+
+1. **Create Configuration File**
+
+   * Copy `Config.example.h` → `Config.h`
+   * Add your credentials:
+
+     * Wi-Fi
+     * Blynk
+     * Telegram
+
+2. **Open Project**
+
+   * Launch `PumpController.ino` in the Arduino IDE
+
+3. **Install Dependencies**
+
+   * Refer to `docs/REQUIREMENTS.md` for required libraries
+
+4. **Upload to Device**
+
+   * Select your ESP32 board
+   * Compile and upload the firmware
+
+---
+
+## Blynk Virtual Pins
+
+| Virtual Pin | Description                      |
+| ----------- | -------------------------------- |
+| `V2`        | Pump control switch              |
+| `V3`        | Pump status indicator            |
+| `V4`        | Flow pulse counter               |
+| `V5`        | Safety timeout runtime (seconds) |
+| `V0`        | Tank 1 level (via ESP-NOW)       |
+| `V1`        | Tank 2 level (via ESP-NOW)       |
+
+---
+
+## Project Documentation
+
+Detailed technical information is available in the following documents:
+
+* `docs/REQUIREMENTS.md` – Dependencies and setup requirements
+* `docs/ARCHITECTURE.md` – System design and component interactions
+
+---
+
+## Security Considerations
+
+* **Do not commit `Config.h`** to version control
+* Sensitive credentials (Wi-Fi, API keys, tokens) must remain local
+* The repository includes `.gitignore` rules to prevent accidental exposure
+
+---
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE).
+This project is licensed under the MIT License. See the `LICENSE` file for details.
