@@ -2,6 +2,7 @@
 #include <Arduino.h>
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
+#include <HTTPClient.h>
 #include <ArduinoJson.h>
 
 #include "BlynkManager.h"
@@ -39,20 +40,28 @@ void loop() {
   ButtonManager::update();
   PumpManager::update();
 
-  if (pendingTelegramMsg.length() > 0) {
-    // Ensure Wi-Fi is still connected
-    if (WiFi.status() != WL_CONNECTED) {
+  String telegramMsg = ESPNowManager::getPendingTelegramMessage();
+  if (telegramMsg.length() > 0) {
+    if (!wifiManager.isConnected()) {
       wifiManager.connectWiFi();
     }
 
-    telegramManager.sendToApproved(pendingTelegramMsg);
-    pendingTelegramMsg = ""; // Clear after sending
+    telegramManager.sendToApproved(telegramMsg);
+    ESPNowManager::clearPendingTelegramMessage();
   }
 
   if (currentMillis - previousNotificationMillis >= notificationIntervalMillis) {
     previousNotificationMillis = currentMillis;
+    if (!wifiManager.isConnected()) {
+      wifiManager.connectWiFi();
+    }
 
     pollTelegramUpdates();
+  }
+
+  if (!wifiManager.isConnected()) {
+    wifiManager.handleDNS();
+    webServerManager.handleClient();
   }
 }
 

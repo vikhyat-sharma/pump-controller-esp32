@@ -36,7 +36,7 @@ public:
   }
 
   static void turnOff() {
-    pinMode(PUMP_RELAY_PIN, INPUT);  // High impedance / OFF
+    pinMode(PUMP_RELAY_PIN, OUTPUT);
     digitalWrite(PUMP_RELAY_PIN, HIGH);
     if (pumpState) {
       pumpState = false;
