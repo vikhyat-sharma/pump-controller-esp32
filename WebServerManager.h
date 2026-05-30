@@ -8,10 +8,11 @@ class WebServerManager {
 public:
   void startServer();
   void handleClient();
-  WebServer server;
+  // Register any additional handlers before calling startServer()
+  void onLevelsRequest();
 
 private:
-  void handleRoot();
+  WebServer server = WebServer(80);
 };
 
 extern WebServerManager webServerManager;
