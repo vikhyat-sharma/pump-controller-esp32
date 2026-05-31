@@ -1,8 +1,12 @@
 #include <Arduino.h>
 #include "TelegramManager.h"
 #include <WiFi.h>
+#include <WiFiClientSecure.h>
+#include <ArduinoJson.h>
 
 TelegramManager telegramManager;
+
+unsigned long telegramLastUpdateId = 0;
 
 void TelegramManager::sendMessage(String message, String chatId) {
   if (WiFi.status() == WL_CONNECTED) {
@@ -27,6 +31,44 @@ void TelegramManager::sendMessage(String message, String chatId) {
     http.end();
   } else {
     Serial.println("WiFi not connected!");
+  }
+}
+
+void TelegramManager::pollUpdates() {
+  if (WiFi.status() != WL_CONNECTED) return;
+
+  WiFiClientSecure client;
+  client.setInsecure();
+
+  HTTPClient https;
+  String url = "https://api.telegram.org/bot" + String(TELEGRAM_TOKEN) + "/getUpdates?offset=" + String(telegramLastUpdateId + 1);
+
+  if (https.begin(client, url)) {
+    int httpCode = https.GET();
+    if (httpCode == 200) {
+      String payload = https.getString();
+
+      const size_t capacity = 30 * JSON_ARRAY_SIZE(1) + JSON_OBJECT_SIZE(3) + 2048;
+      DynamicJsonDocument doc(capacity);
+      DeserializationError error = deserializeJson(doc, payload);
+
+      if (!error && doc["ok"]) {
+        JsonArray result = doc["result"].as<JsonArray>();
+
+        for (JsonVariant update : result) {
+          JsonObject obj = update.as<JsonObject>();
+          telegramLastUpdateId = obj["update_id"].as<unsigned long>();
+
+          if (obj.containsKey("message")) {
+            String chatId = obj["message"]["chat"]["id"].as<String>();
+            String text = obj["message"]["text"].as<String>();
+            Serial.println("Received: " + text + " from " + chatId);
+            handleCommand(chatId, text);
+          }
+        }
+      }
+    }
+    https.end();
   }
 }
 
