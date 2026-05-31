@@ -56,7 +56,7 @@ void loop() {
       wifiManager.connectWiFi();
     }
 
-    pollTelegramUpdates();
+    telegramManager.pollUpdates();
   }
 
   if (!wifiManager.isConnected()) {
@@ -67,40 +67,4 @@ void loop() {
 
 unsigned long lastUpdateId = 0;
 
-void pollTelegramUpdates() {
-  if (WiFi.status() != WL_CONNECTED) return;
-
-  WiFiClientSecure client;
-  client.setInsecure();
-
-  HTTPClient https;
-  String url = "https://api.telegram.org/bot" + String(TELEGRAM_TOKEN) + "/getUpdates?offset=" + String(lastUpdateId + 1);
-
-  if (https.begin(client, url)) {
-    int httpCode = https.GET();
-    if (httpCode == 200) {
-      String payload = https.getString();
-
-      const size_t capacity = 30 * JSON_ARRAY_SIZE(1) + JSON_OBJECT_SIZE(3) + 2048;
-      DynamicJsonDocument doc(capacity);
-      DeserializationError error = deserializeJson(doc, payload);
-
-      if (!error && doc["ok"]) {
-        JsonArray result = doc["result"].as<JsonArray>();
-
-        for (JsonVariant update : result) {
-          JsonObject obj = update.as<JsonObject>();
-          lastUpdateId = obj["update_id"].as<unsigned long>();
-
-          if (obj.containsKey("message")) {
-            String chatId = obj["message"]["chat"]["id"].as<String>();
-            String text = obj["message"]["text"].as<String>();
-            Serial.println("Received: " + text + " from " + chatId);
-            telegramManager.handleCommand(chatId, text);
-          }
-        }
-      }
-    }
-    https.end();
-  }
-}
+// Telegram polling moved into TelegramManager::pollUpdates()
