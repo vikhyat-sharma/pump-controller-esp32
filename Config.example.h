@@ -26,14 +26,24 @@
 
 #define V0 0   // for tank 1
 #define V1 1   // for tank 2
+#define V2 2   // for pump control (Blynk switch)
 #define V3 3   // for pump status
 #define V4 4   // for flow pulses
 #define V5 5   // runtime status / safety notifications
 
 #define VPUMP_STATUS V3
+#define VPUMP_CONTROL V2
 #define VFLOW_PULSES V4
 
 #define VTANK1_LEVEL V0
 #define VTANK2_LEVEL V1
+
+// Tank level thresholds for auto-pump control (percentage 0-100)
+#define TANK1_LOW_THRESHOLD 20
+#define TANK2_HIGH_THRESHOLD 90
+#define AUTO_PUMP_ENABLED 1  // Set to 1 to enable auto-pump based on levels
+
+// OTA Update
+#define OTA_PASSWORD "esp32update"
 
 #endif
