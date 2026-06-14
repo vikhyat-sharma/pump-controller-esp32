@@ -19,7 +19,7 @@ void BlynkManager::sendNotification(const String& message) {
   Blynk.logEvent("notification", message);  // assumes you have a notification event created in Blynk cloud dashboard
 }
 
-BLYNK_WRITE(V2) {
+BLYNK_WRITE(VPUMP_CONTROL) {
   int buttonState = param.asInt();
   if (buttonState == 1)
     PumpManager::turnOn();
