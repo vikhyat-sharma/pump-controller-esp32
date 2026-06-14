@@ -49,8 +49,7 @@ void ESPNowManager::onDataRecv(const esp_now_recv_info_t *info, const uint8_t *i
     Serial.print("Tank 1: "); Serial.print(tank1Level);
     Serial.print(" | Tank 2: "); Serial.println(tank2Level);
 
-    BlynkManager::sendVirtual(VTANK1_LEVEL, tank1Level);
-    BlynkManager::sendVirtual(VTANK2_LEVEL, tank2Level);
+    PumpManager::updateTankLevels(tank1Level, tank2Level);
   } else if (strcmp(msg.type, "TELEGRAM") == 0) {
     pendingTelegramMsg = String(msg.payload);
     pendingTelegramMsg.trim();
