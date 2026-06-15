@@ -7,6 +7,7 @@
 - Push button for manual override
 - Flow sensor connected to `FLOW_SENSOR_PIN` (optional but supported)
 - Remote level-sensing node(s) sending ESP-NOW packets
+- USB cable for initial firmware upload (OTA updates supported after initial flash)
 
 ## Software
 
@@ -29,6 +30,7 @@ ESP32 core already includes:
 - `Preferences`
 - `WebServer`
 - `DNSServer`
+- `ArduinoOTA`
 
 ## Configuration
 
@@ -41,3 +43,7 @@ ESP32 core already includes:
 4. Tune runtime safety values if needed:
    - `MAX_PUMP_ON_DURATION_MS`
    - `PUMP_RESTART_COOLDOWN_MS`
+5. Auto-pump control (optional):
+   - `AUTO_PUMP_ENABLED` - Set to 1 to enable automatic pump control based on tank levels
+   - `TANK1_LOW_THRESHOLD` - Minimum tank 1 level % to allow pump ON (default: 20)
+   - `TANK2_HIGH_THRESHOLD` - Level % at which pump auto-stops (default: 90)
