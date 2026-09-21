@@ -1,0 +1,19 @@
+# Local secrets/config
+Config.h
+
+# Arduino / PlatformIO artifacts
+*.elf
+*.bin
+*.hex
+*.map
+*.o
+*.a
+*.d
+*.log
+
+.pio/
+build/
+dist/
+
+# macOS
+.DS_Store
