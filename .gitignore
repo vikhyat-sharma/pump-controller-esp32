@@ -1,5 +1,6 @@
 # Local secrets/config
 Config.h
+!Config.example.h
 
 # Arduino / PlatformIO artifacts
 *.elf
