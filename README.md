@@ -1,95 +1,114 @@
 # Pump Controller (ESP32)
 
-A reliable and extensible **ESP32-based smart pump controller** designed for automated water tank management. This system integrates local control, wireless communication, and cloud connectivity to deliver a robust and safe pump operation experience.
+A simple and beginner-friendly **ESP32-based smart pump controller** for automated water tank management.
 
 ---
 
-## Overview
+## Quick Start
 
-The Pump Controller enables efficient monitoring and control of water pumps using multiple interfaces:
+1. **Copy Config.example.h to Config.h**
+   ```bash
+   cp Config.example.h Config.h
+   ```
 
-* **Manual Control**: Physical button for local override
-* **ESP-NOW Communication**: Low-latency, peer-to-peer data exchange between devices
-* **Blynk Integration**: Cloud-based dashboard for remote monitoring and control
-* **Telegram Integration**: Real-time alerts and command-based interaction
+2. **Edit Config.h** - Fill in your:
+   - WiFi name & password
+   - Blynk auth token (from blynk.io)
+   - Telegram bot token & your chat ID
 
-This multi-channel design ensures both reliability and flexibility in real-world deployments.
-
----
-
-## What's New
-
-Recent updates focus on improving system safety and maintainability:
-
-* **Pump Safety Timeout**
-  Automatically stops the pump after a configurable maximum runtime (`MAX_PUMP_ON_DURATION_MS`) to prevent damage or dry running.
-
-* **Restart Cooldown Protection**
-  Introduces a delay (`PUMP_RESTART_COOLDOWN_MS`) between successive pump activations to avoid rapid relay switching and hardware stress.
-
-* **Improved Security Practices**
-  Removed hardcoded credentials from source files and documentation. Configuration is now handled securely via a local configuration file.
+3. **Upload** - Open `PumpController.ino` in Arduino IDE and upload to ESP32
 
 ---
 
-## Getting Started
+## How It Works
 
-Follow these steps to set up and run the project:
+The controller combines several ways to control your pump:
 
-1. **Create Configuration File**
-
-   * Copy `Config.example.h` → `Config.h`
-   * Add your credentials:
-
-     * Wi-Fi
-     * Blynk
-     * Telegram
-
-2. **Open Project**
-
-   * Launch `PumpController.ino` in the Arduino IDE
-
-3. **Install Dependencies**
-
-   * Refer to `docs/REQUIREMENTS.md` for required libraries
-
-4. **Upload to Device**
-
-   * Select your ESP32 board
-   * Compile and upload the firmware
+| Control Method | How to Use |
+|----------------|------------|
+| **Manual Button** | Press the physical button connected to GPIO 25 |
+| **Blynk App** | Use switch on V2 to turn pump on/off |
+| **Telegram** | Send `/on` or `/off` commands |
+| **Auto Mode** | Pump starts/stops based on tank levels |
 
 ---
 
-## Blynk Virtual Pins
+## File Structure (Simple!)
 
-| Virtual Pin | Description                      |
-| ----------- | -------------------------------- |
-| `V2`        | Pump control switch              |
-| `V3`        | Pump status indicator            |
-| `V4`        | Flow pulse counter               |
-| `V5`        | Safety timeout runtime (seconds) |
-| `V0`        | Tank 1 level (via ESP-NOW)       |
-| `V1`        | Tank 2 level (via ESP-NOW)       |
+```
+PumpController/
+├── PumpController.ino    # All main logic - THIS IS THE CORE FILE
+├── PumpController.h      # Header with pin definitions
+├── Config.example.h      # Edit this with your credentials
+├── Config.h              # Your personal settings (not committed)
+├── docs/                 # Technical documentation
+└── LegacyManagers/       # Original separate files (optional)
+```
 
----
-
-## Project Documentation
-
-Detailed technical information is available in the following documents:
-
-* `docs/REQUIREMENTS.md` – Dependencies and setup requirements
-* `docs/ARCHITECTURE.md` – System design and component interactions
+**That's it!** Most users only need to edit the 2 config files.
 
 ---
 
-## Security Considerations
+## Pin Connections
 
-* **Do not commit `Config.h`** to version control
-* Sensitive credentials (Wi-Fi, API keys, tokens) must remain local
-* The repository includes `.gitignore` rules to prevent accidental exposure
+| GPIO | Purpose |
+|------|---------|
+| 27   | Pump Relay (ON = LOW) |
+| 25   | Manual Override Button |
+| 26   | Flow Sensor Pulse Input |
+| 2    | Built-in LED (Status) |
+
+---
+
+## Blynk Dashboard Setup
+
+Create a free project at [blynk.io](https://blynk.io) and add these widgets:
+
+| Widget | Virtual Pin | Purpose |
+|--------|-------------|---------|
+| Switch | V2 | Control pump |
+| LED/Value | V3 | Show pump status |
+| LED/Value | V0 | Tank 1 level |
+| LED/Value | V1 | Tank 2 level |
+| LED/Value | V4 | Flow rate |
+
+---
+
+## Telegram Commands
+
+Send these to your bot:
+
+- `/start` - See welcome message
+- `/on` - Turn pump ON (admin only)
+- `/off` - Turn pump OFF (admin only)
+- `/status` - View current status
+
+---
+
+## Safety Features
+
+- **Auto-stop**: Pump turns off after 30 minutes (configurable)
+- **Cooldown**: 30-second delay between pump restarts
+- **Manual Override**: Physical button always works
+
+---
+
+## Troubleshooting
+
+**WiFi won't connect?**
+- Check SSID and password in Config.h
+- Device will start a hotspot if WiFi fails
+
+**Pump not starting?**
+- Check relay wiring (most are active-LOW)
+- Verify manual override isn't stuck on
+
+**Blynk not working?**
+- Verify auth token is correct
+- Check WiFi is connected
 
 ---
 
 ## License
 
-This project is licensed under the MIT License. See the `LICENSE` file for details.
+MIT License - See LICENSE file
